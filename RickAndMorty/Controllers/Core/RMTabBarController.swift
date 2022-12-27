@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Controller to show tab views
 final class RMTabBarController: UITabBarController
 {
 

@@ -7,9 +7,12 @@
 
 import UIKit
 
-final class RMSettingsViewController: UIViewController {
+/// Controller to show and search for settings
+final class RMSettingsViewController: UIViewController
+{
 
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
