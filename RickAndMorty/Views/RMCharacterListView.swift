@@ -7,9 +7,18 @@
 
 import UIKit
 
+protocol RMCharacterListViewDelegate: AnyObject
+{
+    func rmCharacterListView(_ characterListView: RMCharacterListView,
+                             didSelectCharacter character: RMCharacter)
+}
+
 /// View that handles showing list of characters, loader
 final class RMCharacterListView: UIView
 {
+    public weak var delegate: RMCharacterListViewDelegate?
+    
+    // Instance of the RMCharacterListViewViewModel
     private let viewModel = RMCharacterListViewViewModel()
 
     // Loading spinner
@@ -26,7 +35,7 @@ final class RMCharacterListView: UIView
     {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isHidden = true
@@ -37,7 +46,6 @@ final class RMCharacterListView: UIView
     }()
     
     // MARK: - Init
-    
     override init(frame: CGRect)
     {
         super.init(frame: frame)
@@ -46,15 +54,18 @@ final class RMCharacterListView: UIView
         addSubviews(collectionView, spinner)
         addConstraints()
         spinner.startAnimating()
+        viewModel.delegate = self
         viewModel.fetchCharacters()
         setUpCollectionView()
     }
 
-    required init?(coder: NSCoder){
+    required init?(coder: NSCoder)
+    {
         fatalError("Unsupported")
     }
     
-    private func addConstraints(){
+    private func addConstraints()
+    {
         NSLayoutConstraint.activate([
             spinner.widthAnchor.constraint(equalToConstant: 100),
             spinner.heightAnchor.constraint(equalToConstant: 100),
@@ -73,17 +84,40 @@ final class RMCharacterListView: UIView
         collectionView.delegate = viewModel
         collectionView.dataSource = viewModel
         
-        DispatchQueue.main.asyncAfter(deadline: .now()+2, execute:
-        {
-            self.spinner.stopAnimating()
-            
-            self.collectionView.isHidden = false
-            
-            UIView.animate(withDuration: 0.4)
-            {
-                self.collectionView.alpha = 1
-            }
-        })
+        // Hard coded spinner settings and collection view
+//        DispatchQueue.main.asyncAfter(deadline: .now()+2, execute:
+//        {
+//            self.spinner.stopAnimating()
+//
+//            self.collectionView.isHidden = false
+//
+//            UIView.animate(withDuration: 0.4)
+//            {
+//                self.collectionView.alpha = 1
+//            }
+//        })
     }
 }
 
+/*
+ Instance of the RMCharacterListViewViewModelDelegate protocol which notifies the character view controller to load the initial characters
+ */
+extension RMCharacterListView: RMCharacterListViewViewModelDelegate
+{
+    func didSelectCharacter(_ character: RMCharacter)
+    {
+        delegate?.rmCharacterListView(self, didSelectCharacter: character)
+    }
+    
+    func didLoadInitialCharacters()
+    {
+        collectionView.reloadData()
+        spinner.stopAnimating()
+        collectionView.isHidden = false
+        collectionView.reloadData() // Only reloads for the initial view
+        UIView.animate(withDuration: 0.4)
+        {
+            self.collectionView.alpha = 1
+        }
+    }
+}
