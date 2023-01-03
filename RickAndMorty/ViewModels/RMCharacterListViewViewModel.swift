@@ -10,6 +10,7 @@ import UIKit
 protocol RMCharacterListViewViewModelDelegate: AnyObject
 {
     func didLoadInitialCharacters()
+    func didLoadMoreCharacters(with newIndexPaths: [IndexPath])
     func didSelectCharacter(_ character: RMCharacter)
 }
 
@@ -28,12 +29,14 @@ final class RMCharacterListViewViewModel: NSObject
     {
         didSet
         {
-            for character in characters
+            // Assuming every character has a unique name, then the view model should not fetch characters with names that have already been fecthed
+            for character in characters where !cellViewModels.contains(where: { $0.characterName == character.name })
             {
                 let viewModel = RMCharacterCollectionViewCellViewModel(
                     characterName: character.name,
                     characterStatus: character.status,
                     characterImageUrl: URL(string: character.image))
+                
                     cellViewModels.append(viewModel)
             }
         }
@@ -80,10 +83,71 @@ final class RMCharacterListViewViewModel: NSObject
     }
     
     /// Paginate if additional characters are needed
-    public func fetchAdditionalCharacters()
+    public func fetchAdditionalCharacters(url: URL)
     {
-        isLoadingMoreCharacters = true
         // Fetch more characters
+        guard !isLoadingMoreCharacters
+        else
+        {
+            return
+        }
+        print("Fetching more data")
+        isLoadingMoreCharacters = true
+    
+        guard let request = RMRequest(url: url)
+        else
+        {
+            // Dont load more characters if no request was made
+            isLoadingMoreCharacters = false
+            return
+        }
+        RMService.shared.execute(request,expecting: RMGetAllCharactersResponse.self) { [weak self] result in
+            guard let strongSelf = self
+            else
+            {
+                return
+            }
+            
+            switch result
+            {
+            case.success(let responseModel):
+                print("Pre-update: \(strongSelf.cellViewModels.count)")
+                // Fetches more characters
+                let moreResults = responseModel.results
+                // Info data that we get from the api
+                let info = responseModel.info
+                // Adds the number of characters
+                strongSelf.characters.append(contentsOf: moreResults)
+                strongSelf.apiInfo = info
+                
+                print(moreResults.count)
+                print(moreResults.first?.name)
+                
+                // Getting the count of the new fetched characters
+                let originalCount = strongSelf.characters.count
+                let newCount  = moreResults.count
+                let total = originalCount + newCount
+                let startingIndex = total - newCount
+                let indeXPathToAdd:[IndexPath] = Array(startingIndex..<(startingIndex+newCount)).compactMap({
+                    return IndexPath(row: $0, section: 0)
+                })
+                print(indeXPathToAdd.count)
+                strongSelf.characters.append(contentsOf: moreResults)
+                print("Post-update: \(strongSelf.cellViewModels.count)")
+                
+                // We do this on the main thread since it triggers updates on the view
+//                DispatchQueue.main.async
+//                {
+//                    strongSelf.delegate?.didLoadMoreCharacters(
+//                        with:indeXPathToAdd)
+////                    strongSelf.isLoadingMoreCharacters = false
+//                }
+            case.failure(let failure):
+                print(String(describing: failure))
+                
+                self?.isLoadingMoreCharacters = false
+            }
+        }
         
     }
     
@@ -180,23 +244,48 @@ extension RMCharacterListViewViewModel: UIScrollViewDelegate
     func scrollViewDidScroll(_ scrollView: UIScrollView)
     {
         // isLoadingMoreCharacters ensures that we are loading the characters only once and not n times
-        guard shouldShowLoadMoreIndicator, !isLoadingMoreCharacters
+        guard shouldShowLoadMoreIndicator,
+              !isLoadingMoreCharacters,
+              // If the view is not empty then we are stil loading data
+              !cellViewModels.isEmpty,
+              let  nextUrlString = apiInfo?.next,
+              let url = URL(string: nextUrlString)
         else
         {
-          return
+            return
         }
-        let offset = scrollView.contentOffset.y
-        let totalContentHeight = scrollView.contentSize.height
-        let totalScrollViewFixedHeight = scrollView.frame.size.height
         
-        /* Check whether we are at the bottom by checking the offset,totalContentHeight & totalScrollViewFixedHeight
-         * 100 is the height of the footer where the spinner is located, 20 is just an addition buffer
-         */
-        if offset >= (totalContentHeight-totalScrollViewFixedHeight-120)
-        {
-            fetchAdditionalCharacters()
-//            print("Should start fetching more")
+        // Timer to cause a delay action
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) {[weak self] t in
+            
+            let offset = scrollView.contentOffset.y
+            let totalContentHeight = scrollView.contentSize.height
+            let totalScrollViewFixedHeight = scrollView.frame.size.height
+            
+            /* Check whether we are at the bottom by checking the offset,totalContentHeight & totalScrollViewFixedHeight
+             * 100 is the height of the footer where the spinner is located, 20 is just an addition buffer
+             */
+            if offset >= (totalContentHeight-totalScrollViewFixedHeight-120)
+            {
+                self?.fetchAdditionalCharacters(url: url)
+            }
+            // Stops the timer from firing it self again
+            t.invalidate()
         }
+        
+        
+//        let offset = scrollView.contentOffset.y
+//        let totalContentHeight = scrollView.contentSize.height
+//        let totalScrollViewFixedHeight = scrollView.frame.size.height
+//
+//        /* Check whether we are at the bottom by checking the offset,totalContentHeight & totalScrollViewFixedHeight
+//         * 100 is the height of the footer where the spinner is located, 20 is just an addition buffer
+//         */
+//        if offset >= (totalContentHeight-totalScrollViewFixedHeight-120)
+//        {
+//            fetchAdditionalCharacters(url: url)
+////            print("Should start fetching more")
+//        }
         
 //        print("Offset: \(offset)")
 //        print("totalContentHeight: \(totalContentHeight)")

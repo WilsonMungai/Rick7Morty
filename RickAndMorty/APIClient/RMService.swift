@@ -40,7 +40,7 @@ final class RMService
             completion(.failure(RMServiveError.failedToCreateRequest))
             return
         }
-        
+        print("API Call: \(request.url?.absoluteString ?? "")")
         let task = URLSession.shared.dataTask(with: urlRequest) { data, __, error in
             guard let data = data, error == nil else{
                 completion(.failure(error ?? RMServiveError.failedToGetData))
