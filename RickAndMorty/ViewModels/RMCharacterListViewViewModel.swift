@@ -30,14 +30,19 @@ final class RMCharacterListViewViewModel: NSObject
         didSet
         {
             // Assuming every character has a unique name, then the view model should not fetch characters with names that have already been fecthed
-            for character in characters where !cellViewModels.contains(where: { $0.characterName == character.name })
+            for character in characters
+//            where !cellViewModels.contains(where: { $0.characterName == character.name })
             {
                 let viewModel = RMCharacterCollectionViewCellViewModel(
                     characterName: character.name,
                     characterStatus: character.status,
                     characterImageUrl: URL(string: character.image))
                 
+                // If this view model doesnt contain the created view model then and only then should it be insterd
+                if !cellViewModels.contains(viewModel)
+                {
                     cellViewModels.append(viewModel)
+                }
             }
         }
     }
@@ -91,7 +96,6 @@ final class RMCharacterListViewViewModel: NSObject
         {
             return
         }
-        print("Fetching more data")
         isLoadingMoreCharacters = true
     
         guard let request = RMRequest(url: url)
@@ -111,17 +115,11 @@ final class RMCharacterListViewViewModel: NSObject
             switch result
             {
             case.success(let responseModel):
-                print("Pre-update: \(strongSelf.cellViewModels.count)")
                 // Fetches more characters
                 let moreResults = responseModel.results
                 // Info data that we get from the api
                 let info = responseModel.info
-                // Adds the number of characters
-                strongSelf.characters.append(contentsOf: moreResults)
                 strongSelf.apiInfo = info
-                
-                print(moreResults.count)
-                print(moreResults.first?.name)
                 
                 // Getting the count of the new fetched characters
                 let originalCount = strongSelf.characters.count
@@ -131,20 +129,19 @@ final class RMCharacterListViewViewModel: NSObject
                 let indeXPathToAdd:[IndexPath] = Array(startingIndex..<(startingIndex+newCount)).compactMap({
                     return IndexPath(row: $0, section: 0)
                 })
-                print(indeXPathToAdd.count)
+                // Adds the number of characters
                 strongSelf.characters.append(contentsOf: moreResults)
-                print("Post-update: \(strongSelf.cellViewModels.count)")
-                
+            
                 // We do this on the main thread since it triggers updates on the view
-//                DispatchQueue.main.async
-//                {
-//                    strongSelf.delegate?.didLoadMoreCharacters(
-//                        with:indeXPathToAdd)
-////                    strongSelf.isLoadingMoreCharacters = false
-//                }
+                DispatchQueue.main.async
+                {
+                    strongSelf.delegate?.didLoadMoreCharacters(
+                        with:indeXPathToAdd)
+                    
+                    strongSelf.isLoadingMoreCharacters = false
+                }
             case.failure(let failure):
                 print(String(describing: failure))
-                
                 self?.isLoadingMoreCharacters = false
             }
         }

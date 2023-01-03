@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class RMCharacterCollectionViewCellViewModel
+final class RMCharacterCollectionViewCellViewModel: Hashable, Equatable
 {
     // Properties to hold characters details to be displayed on the cell
     public let characterName: String
@@ -58,4 +58,19 @@ final class RMCharacterCollectionViewCellViewModel
         task.resume()
         
     }
+    
+    // MARK: - Hashable
+    // Equatable to check whether two items are equal to one another
+    static func ==(lhs: RMCharacterCollectionViewCellViewModel, rhs: RMCharacterCollectionViewCellViewModel) -> Bool
+    {
+        return lhs.hashValue == rhs.hashValue
+    }
+    // Create a unique hash value for the items every time the view model is created
+    func hash(into hasher: inout Hasher)
+    {
+        hasher.combine(characterName)
+        hasher.combine(characterStatus)
+        hasher.combine(characterImageUrl)
+    }
 }
+
