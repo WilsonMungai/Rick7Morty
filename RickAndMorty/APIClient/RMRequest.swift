@@ -70,8 +70,9 @@ final class RMRequest
     /// Desired htttp method
     public let httpMethod = "GET"
     
+    /// Attempt to create request
     /// Construct request
-    /// - Parameters:
+    /// - Parameters url: URL to parse
     /// - endpoint: Target endpoint
     /// - pathComponenets: Collection of path components
     /// - queryParameter: Collection of query components
@@ -103,10 +104,19 @@ final class RMRequest
             let components = trimmed.components(separatedBy: "/")
             if !components.isEmpty
             {
-                let endPointString = components[0]
+                let endPointString = components[0] // Initial endpoint, we use remove first when we have path components to avoid duplicating the value
+                var pathComponents: [String] = []
+                
+                // We not only have the endpoints but we have a value in addition to the endpoint
+                if components.count > 1
+                {
+                    pathComponents = components
+                    //removes components[0]
+                    pathComponents.removeFirst()
+                }
                 if let rmEndpoint = RMEndpoint(rawValue: endPointString)
                 {
-                    self.init(endpoint: rmEndpoint)
+                    self.init(endpoint: rmEndpoint, pathComponenets:pathComponents )
                     return
                 }
             }
