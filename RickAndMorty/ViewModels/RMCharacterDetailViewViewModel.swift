@@ -11,6 +11,18 @@ final class RMCharacterDetailViewViewModel
 {
     private let character: RMCharacter
     
+    // enum section types to hold the different character detail information
+    enum SectionType: CaseIterable
+    {
+        case photo
+        case information
+        case episodes
+    }
+    
+    // MARK: - Init
+    // A collection of values of SectionType
+    public let sections = SectionType.allCases
+    
     // Passing the character
     init (character: RMCharacter)
     {
@@ -26,4 +38,5 @@ final class RMCharacterDetailViewViewModel
     {
         character.name.uppercased()
     }
+    
 }

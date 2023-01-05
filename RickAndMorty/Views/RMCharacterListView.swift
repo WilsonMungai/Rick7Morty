@@ -136,3 +136,4 @@ extension RMCharacterListView: RMCharacterListViewViewModelDelegate
         }
     }
 }
+
