@@ -13,21 +13,60 @@ final class RMCharacterDetailViewViewModel
     private let character: RMCharacter
     
     // enum section types to hold the different character detail information
-    enum SectionType: CaseIterable
+    enum SectionType
     {
-        case photo
-        case information
-        case episodes
+        case photo(viewModel: RMCharacterPhotoCollectionViewCellViewModel)
+        
+        case information(viewModel: [RMCharacterInfoCollectionViewCellViewModel])
+        
+        case episodes(viewModel: [RMCharacterEpisodeCollectionViewCellViewModel])
     }
     
     // MARK: - Init
     // A collection of values of SectionType
-    public let sections = SectionType.allCases
+    public var sections: [SectionType] = []
     
     // Passing the character
     init (character: RMCharacter)
     {
         self.character = character
+        setUpSections()
+    }
+    
+//    let id: Int
+//    let name: String
+//    let status: RMCharacterStatus
+//    let species: String
+//    let type: String
+//    let gender: RMCharacterGender
+//    let origin: RMOrigin
+//    let location: RMSingleLocation
+//    let image: String
+//    let episode: [String]
+//    let url: String
+//    let created: String
+    
+    private func setUpSections(){
+        sections = [
+            // Sets the character image
+            .photo(viewModel: .init(imageUrl: URL(string: character.image))),
+            
+            // Sets the character information
+            .information(viewModel: [
+                .init(value: character.status.text, title: "Status"),
+                .init(value: character.gender.rawValue, title: "Gender"),
+                .init(value: character.type, title: "Type"),
+                .init(value: character.species, title: "Species"),
+                .init(value: character.origin.name, title: "Origin"),
+                .init(value: character.location.name, title: "Location"),
+                .init(value: character.created, title: "Created"),
+                .init(value: "\(character.episode.count)", title: "Total Episodes"),
+                ]),
+            // Sets the character episodes
+            .episodes(viewModel: character.episode.compactMap({
+                    return RMCharacterEpisodeCollectionViewCellViewModel(episodeDataUrl: URL(string: $0))
+                }))
+            ]
     }
     
     private var requestUrl:URL?
