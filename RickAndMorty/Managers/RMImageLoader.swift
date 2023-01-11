@@ -28,6 +28,7 @@ final class RMImageLoader
             completion(.success(data as Data))
             return
         }
+        
         let request = URLRequest(url:url)
         let task = URLSession.shared.dataTask(with: request)
         { [weak self] data, _, error in
@@ -37,6 +38,7 @@ final class RMImageLoader
                 completion(.failure(error ?? URLError(.badServerResponse)))
                 return
             }
+            
             let value = data as NSData
             self?.imageDataCache.setObject(value, forKey: key)
             completion(.success(data))
