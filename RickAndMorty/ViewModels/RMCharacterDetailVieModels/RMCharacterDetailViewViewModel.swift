@@ -12,6 +12,11 @@ final class RMCharacterDetailViewViewModel
 {
     private let character: RMCharacter
     
+    // Exposes the epidoes the character was featured in
+    public var epidoses: [String]{
+        character.episode
+    }
+    
     // enum section types to hold the different character detail information
     enum SectionType
     {

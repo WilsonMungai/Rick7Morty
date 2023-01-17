@@ -9,6 +9,7 @@ import Foundation
 
 // Creates a protocol of the RMEpidoes and then call it in the registerForData public func
 protocol RMEpisodeDataRender {
+    
     var name: String {get}
     var air_date: String {get}
     var episode: String {get}

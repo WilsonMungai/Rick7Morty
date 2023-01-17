@@ -156,4 +156,25 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
         //        }
         //    }
     }
+    
+    // Table view delegate function to update selected episode
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let sectionType = viewModel.sections[indexPath.section]
+        switch sectionType
+        {
+            // Photo cell
+        case .photo, .information:
+            break
+            
+            // Only make the episode cells clickable
+            // Episode cells
+        case .episodes:
+            let epispdes = self.viewModel.epidoses
+            let selection = epispdes[indexPath.row]
+            
+            // Push Episode view controller
+            let vc = RMEpisodeDetailViewController(url: URL(string: selection))
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
