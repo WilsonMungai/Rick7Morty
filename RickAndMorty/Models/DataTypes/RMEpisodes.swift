@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RMEpisodes: Codable
+struct RMEpisodes: Codable, RMEpisodeDataRender
 {
    let id: Int
    let name: String
