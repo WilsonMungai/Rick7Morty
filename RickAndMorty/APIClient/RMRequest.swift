@@ -24,7 +24,7 @@ final class RMRequest
     
     // Constructed url for the api request in string format
     /// Desired end point
-    private let endpoint: RMEndpoint
+    let endpoint: RMEndpoint
     
     /// Path components if any
     private let pathComponenets: [String]

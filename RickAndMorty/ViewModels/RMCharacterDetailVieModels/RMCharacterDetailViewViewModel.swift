@@ -143,7 +143,7 @@ final class RMCharacterDetailViewViewModel
         let section = NSCollectionLayoutSection(group: group)
         // The section will scroll in relation to the main layout axis
         // paging method snaps the next page into place, continuous method scrolling is non stop
-        section.orthogonalScrollingBehavior = .paging
+        section.orthogonalScrollingBehavior = .groupPaging
         return section
     }
 }

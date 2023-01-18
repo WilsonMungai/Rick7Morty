@@ -8,7 +8,9 @@
 import Foundation
 
 /// Represnts unique API endpoints
-@frozen enum RMEndpoint: String
+//  We make it hashable so that we can use it as the key in the dictionary in the RMAPICacheManager
+//  we use caseIterable so that we loop through all the 3 endpoints
+@frozen enum RMEndpoint: String, CaseIterable, Hashable
 {
     /// end point to get caharacter information
     case character
