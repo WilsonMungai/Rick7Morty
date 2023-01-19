@@ -10,8 +10,6 @@ import UIKit
 /// Controller to show and search for characters
 final class RMCharacterViewController: UIViewController, RMCharacterListViewDelegate
 {
-    
-    
     // instance of character list view class
     private let characterListView = RMCharacterListView()
     

@@ -15,10 +15,9 @@ protocol RMEpisodeDataRender {
     var episode: String {get}
 }
 
-final class RMCharacterEpisodeCollectionViewCellViewModel
+final class RMCharacterEpisodeCollectionViewCellViewModel: Hashable, Equatable
 {
     private var isFetching = false
-
     // Variable to hang on to the block in the registerForData function
     private var dataBlock: ((RMEpisodeDataRender) -> Void)?
     // Instance of RMEpisodes which is optional since we dont have the episodes
@@ -70,5 +69,13 @@ final class RMCharacterEpisodeCollectionViewCellViewModel
                 print(String(describing: failure))
             }
         }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.episodeDataUrl?.absoluteString ?? "")
+    }
+    
+    static func == (lhs: RMCharacterEpisodeCollectionViewCellViewModel, rhs: RMCharacterEpisodeCollectionViewCellViewModel) -> Bool {
+        return lhs.hashValue == rhs.hashValue
     }
 }
