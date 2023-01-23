@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Sets up the Episode View layout
 final class RMCharacterEpisodeCollectionViewCell: UICollectionViewCell
 {
     static let cellIdentifier = "RMCharacterEpisodeCollectionViewCell"
@@ -37,9 +38,7 @@ final class RMCharacterEpisodeCollectionViewCell: UICollectionViewCell
     {
         super.init(frame: frame)
         contentView.backgroundColor = .tertiarySystemBackground
-        contentView.layer.cornerRadius = 8
-        contentView.layer.borderWidth = 2
-        contentView.layer.borderColor = UIColor.gray.cgColor
+        setUpLayer()
         contentView.addSubviews(seasonLable, nameLabel, airDateLabel)
         setUpConstraints()
     }
@@ -49,6 +48,13 @@ final class RMCharacterEpisodeCollectionViewCell: UICollectionViewCell
         fatalError("Unsupported")
     }
     
+    // Content view setup
+    private func setUpLayer() {
+        contentView.layer.cornerRadius = 8
+        contentView.layer.borderWidth = 2
+    }
+    
+    // View constraints
     private func setUpConstraints(){
         
         NSLayoutConstraint.activate([
@@ -63,7 +69,7 @@ final class RMCharacterEpisodeCollectionViewCell: UICollectionViewCell
             nameLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.3),
             
             airDateLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            airDateLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            airDateLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
             airDateLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 10),
             airDateLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.3),
         ])
@@ -93,6 +99,7 @@ final class RMCharacterEpisodeCollectionViewCell: UICollectionViewCell
             self?.airDateLabel.text = "This was aired on " + data.air_date
         }
         viewModel.fetchEpisode()
+        contentView.layer.borderColor = viewModel.borderColor.cgColor
     }
     
 }

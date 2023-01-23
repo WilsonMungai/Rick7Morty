@@ -27,17 +27,31 @@ final class RMEpisodeListViewViewModel: NSObject
     
     private var isLoadingMoreCharacters = false
     
+    // A collection of ui colors
+    private let borderColors: [UIColor] = [
+        .systemGreen,
+        .systemOrange,
+        .systemBlue,
+        .systemYellow,
+        .systemCyan,
+        .systemRed,
+        .systemPurple,
+        .systemIndigo,
+        .systemMint
+    ]
+    
     private var episodes: [RMEpisodes] = []
     {
         didSet
         {
             // Assuming every character has a unique name, then the view model should not fetch characters with names that have already been fecthed
             for episode in episodes
-//            where !cellViewModels.contains(where: { $0.characterName == character.name })
+            //            where !cellViewModels.contains(where: { $0.characterName == character.name })
             {
                 let viewModel = RMCharacterEpisodeCollectionViewCellViewModel(
-                    episodeDataUrl: URL(string: episode.url))
-                
+                    episodeDataUrl: URL(string: episode.url),
+                    //Sets random colors to the episode cells
+                    borderColor: borderColors.randomElement() ?? .systemGray)
                 // If this view model doesnt contain the created view model then and only then should it be insterd
                 if !cellViewModels.contains(viewModel)
                 {
@@ -97,7 +111,7 @@ final class RMEpisodeListViewViewModel: NSObject
             return
         }
         isLoadingMoreCharacters = true
-    
+        
         guard let request = RMRequest(url: url)
         else
         {
@@ -131,7 +145,7 @@ final class RMEpisodeListViewViewModel: NSObject
                 })
                 // Adds the number of characters
                 strongSelf.episodes.append(contentsOf: moreResults)
-            
+                
                 // We do this on the main thread since it triggers updates on the view
                 DispatchQueue.main.async
                 {
@@ -195,10 +209,10 @@ extension RMEpisodeListViewViewModel: UICollectionViewDataSource, UICollectionVi
                     ofKind: kind,
                     withReuseIdentifier: RMFooterLoadingCollectionReusableView.identifier,
                     for: indexPath) as? RMFooterLoadingCollectionReusableView
-                else
-                {
-                fatalError("Unsupported")
-                }
+        else
+        {
+            fatalError("Unsupported")
+        }
         footer.startAnimating()
         return footer
     }
@@ -216,11 +230,11 @@ extension RMEpisodeListViewViewModel: UICollectionViewDataSource, UICollectionVi
     // Sets the size of the collection view cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
     {
-        let bounds = UIScreen.main.bounds
-        let width = (bounds.width-30)/2
+        let bounds = collectionView.bounds
+        let width = bounds.width - 20
         return CGSize(
             width:width,
-            height: width * 0.8)
+            height: 100)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
@@ -271,21 +285,21 @@ extension RMEpisodeListViewViewModel: UIScrollViewDelegate
         }
         
         
-//        let offset = scrollView.contentOffset.y
-//        let totalContentHeight = scrollView.contentSize.height
-//        let totalScrollViewFixedHeight = scrollView.frame.size.height
-//
-//        /* Check whether we are at the bottom by checking the offset,totalContentHeight & totalScrollViewFixedHeight
-//         * 100 is the height of the footer where the spinner is located, 20 is just an addition buffer
-//         */
-//        if offset >= (totalContentHeight-totalScrollViewFixedHeight-120)
-//        {
-//            fetchAdditionalEpisodes(url: url)
-////            print("Should start fetching more")
-//        }
+        //        let offset = scrollView.contentOffset.y
+        //        let totalContentHeight = scrollView.contentSize.height
+        //        let totalScrollViewFixedHeight = scrollView.frame.size.height
+        //
+        //        /* Check whether we are at the bottom by checking the offset,totalContentHeight & totalScrollViewFixedHeight
+        //         * 100 is the height of the footer where the spinner is located, 20 is just an addition buffer
+        //         */
+        //        if offset >= (totalContentHeight-totalScrollViewFixedHeight-120)
+        //        {
+        //            fetchAdditionalEpisodes(url: url)
+        ////            print("Should start fetching more")
+        //        }
         
-//        print("Offset: \(offset)")
-//        print("totalContentHeight: \(totalContentHeight)")
-//        print("totalScrollViewFixedHeight: \(totalScrollViewFixedHeight)")
+        //        print("Offset: \(offset)")
+        //        print("totalContentHeight: \(totalContentHeight)")
+        //        print("totalScrollViewFixedHeight: \(totalScrollViewFixedHeight)")
     }
 }

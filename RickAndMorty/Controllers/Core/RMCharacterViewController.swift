@@ -20,6 +20,7 @@ final class RMCharacterViewController: UIViewController, RMCharacterListViewDele
         // Supports both light mode and dark mode
         view.backgroundColor = .systemBackground
         title = "Characters"
+        addSeacrchButton()
         setUpView()
     }
     
@@ -37,6 +38,14 @@ final class RMCharacterViewController: UIViewController, RMCharacterListViewDele
         ])
     }
     
+    // Search Bar Button item
+    private func addSeacrchButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(didTapSearch))
+    }
+    
+    @objc private func didTapSearch() {
+        
+    }
     // MARK: - RMCharacterListViewDelegate
     
     // Delegate implementation

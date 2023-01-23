@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 // Creates a protocol of the RMEpidoes and then call it in the registerForData public func
 protocol RMEpisodeDataRender {
@@ -30,7 +31,8 @@ final class RMCharacterEpisodeCollectionViewCellViewModel: Hashable, Equatable
                     
         }
     }
-    let episodeDataUrl: URL?
+    private let episodeDataUrl: URL?
+    public let borderColor: UIColor
     
     // MARK: Public
     // We call the protocol RMEpisodeDataRender instead of calling the RMEpisode model so that we can only return the data in the defined in the protocol
@@ -39,9 +41,10 @@ final class RMCharacterEpisodeCollectionViewCellViewModel: Hashable, Equatable
     }
     
     // MARK: Init
-    init(episodeDataUrl: URL?)
+    init(episodeDataUrl: URL?, borderColor: UIColor = .systemBlue)
     {
         self.episodeDataUrl = episodeDataUrl
+        self.borderColor = borderColor
     }
     
     // Fecthes the episode urls
