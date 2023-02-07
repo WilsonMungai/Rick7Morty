@@ -8,11 +8,11 @@
 import UIKit
 
 /// Vc to show episode detail view controller
-class RMEpisodeDetailViewController: UIViewController, RMEpisodeDetailViewViewModelDelegate {
+class RMEpisodeDetailViewController: UIViewController, RMEpisodeDetailViewViewModelDelegate, RMEpiosdeDetailViewDelegate {
 
     private var viewModel: RMEpisodeDetailViewViewModel
     
-    private let detailView = RMEpisodeDetailView()
+    private let detailView = RickAndMorty.RMEpisodeDetailView()
     
     // MARK: - Init
     init(url: URL?) {
@@ -28,6 +28,7 @@ class RMEpisodeDetailViewController: UIViewController, RMEpisodeDetailViewViewMo
         super.viewDidLoad()
         view.addSubview(detailView)
         addConstraints()
+        detailView.delegate = self
         title = "Episode"
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
@@ -50,7 +51,18 @@ class RMEpisodeDetailViewController: UIViewController, RMEpisodeDetailViewViewMo
         
     }
     
-    // MARK: - Protocol delegate
+    // MARK: - View Delegate
+    func RMEpisodeDetailView(
+        _ detailView: RMEpisodeDetailView,
+        didSelect character: RMCharacter
+    ) {
+        let vc = RMCharacterDetailViewController(viewModel: .init(character: character))
+        vc.title = character.name
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // MARK: - View Model delegate
     func didFetchEpisodeDtaials() {
         detailView.configure(with: viewModel)
     }

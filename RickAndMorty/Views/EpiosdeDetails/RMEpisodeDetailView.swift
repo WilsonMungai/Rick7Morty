@@ -7,7 +7,16 @@
 
 import UIKit
 
+protocol RMEpiosdeDetailViewDelegate: AnyObject {
+    func RMEpisodeDetailView(
+        _ detailView: RMEpisodeDetailView,
+        didSelect character: RMCharacter
+        )
+}
+
 final class RMEpisodeDetailView: UIView {
+    
+    public weak var delegate: RMEpiosdeDetailViewDelegate?
     
     private var viewModel: RMEpisodeDetailViewViewModel? {
         // sets the view when the collection views load
@@ -145,6 +154,22 @@ extension RMEpisodeDetailView: UICollectionViewDelegate, UICollectionViewDataSou
     // Enables us to select a character in the cell
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        guard let viewModel = viewModel else {
+            return
+        }
+        let sections = viewModel.cellViewModels
+        
+        let sectionType = sections[indexPath.section]
+        switch sectionType {
+        case .information:
+            break
+        case .characters:
+            guard let character = viewModel.character(at: indexPath.row) else {
+                return
+            }
+            delegate?.RMEpisodeDetailView(self, didSelect: character)
+        }
+        
     }
 }
 
@@ -168,7 +193,7 @@ extension RMEpisodeDetailView {
         // Adds margins to the edges of the cell layout
         item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
         
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1),heightDimension: .absolute(100)), subitems: [item])
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1),heightDimension: .absolute(80)), subitems: [item])
         
         let section = NSCollectionLayoutSection (group: group)
         
