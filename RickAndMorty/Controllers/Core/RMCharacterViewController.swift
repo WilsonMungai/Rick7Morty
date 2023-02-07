@@ -43,8 +43,12 @@ final class RMCharacterViewController: UIViewController, RMCharacterListViewDele
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(didTapSearch))
     }
     
+    // Links the search button to the search view controller and speicfies the character type to search for characters
     @objc private func didTapSearch() {
-        
+        let vc = RMSearchViewViewController(config:RMSearchViewViewController.Config(type: .character))
+        // Disables the large title from being displayed
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
     // MARK: - RMCharacterListViewDelegate
     
