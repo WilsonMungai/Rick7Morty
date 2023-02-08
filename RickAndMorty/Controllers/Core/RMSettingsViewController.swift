@@ -12,26 +12,51 @@ import SwiftUI
 final class RMSettingsViewController: UIViewController
 {
     // compact map to loop over all the cases
-//    private let viewModel = RMSettingsViewViewModel(cellViewModel: RMSettingsOption.allCases.compactMap({
-//        // everytime we loop the RMSettings option we are going to return RMSettingsCellViewModel, therefore getting all the cell view models  wanted
-//        return RMSettingsCellViewModel(type: $0)
-//    }))
+    //    private let viewModel = RMSettingsViewViewModel(cellViewModel: RMSettingsOption.allCases.compactMap({
+    //        // everytime we loop the RMSettings option we are going to return RMSettingsCellViewModel, therefore getting all the cell view models  wanted
+    //        return RMSettingsCellViewModel(type: $0)
+    //    }))
     
     // Link up swiftui to uikit
     // call the view model here
-    private let settingsView = _UIHostingView(
+    private let settingsSwiftUIController = UIHostingController(
         rootView: RMSettingsView(viewModel: RMSettingsViewViewModel(cellViewModel: RMSettingsOption.allCases.compactMap({
             // everytime we loop the RMSettings option we are going to return RMSettingsCellViewModel, therefore getting all the cell view models  wanted
             return RMSettingsCellViewModel(type: $0)
-        }))))
-    
+        })
+      )
+    ))
     
     override func viewDidLoad()
     {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .systemBackground
         title = "Settings"
+        
+        addSwiftUIController()
     }
-
+    
+    private func addSwiftUIController() {
+        // Add it as a child
+        addChild(settingsSwiftUIController)
+        
+        // Notify parent
+        settingsSwiftUIController.didMove(toParent: self)
+        
+        // Add the view
+        view.addSubview(settingsSwiftUIController.view)
+        
+        settingsSwiftUIController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Pin the view to all the corners
+        NSLayoutConstraint.activate([
+            settingsSwiftUIController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            settingsSwiftUIController.view.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            settingsSwiftUIController.view.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            settingsSwiftUIController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+        ])
+    }
+    
 }

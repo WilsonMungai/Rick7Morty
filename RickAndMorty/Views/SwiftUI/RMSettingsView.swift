@@ -15,12 +15,28 @@ struct RMSettingsView: View {
     }
     let strings = ["a", "b", "c"]
     var body: some View {
-        ScrollView(.vertical) {
             // List loops over the data
+//            ForEach(viewModel.cellViewModel) { viewModel in
+//                Text(viewModel.title)
+//            }
             List(viewModel.cellViewModel) { viewModel in
-                Text(viewModel.title)
+                HStack {
+                    if let image = viewModel.image{
+                        Image(uiImage: image)
+                            .resizable()
+                            .renderingMode(.template)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color(viewModel.iconContainerColor))
+                            .cornerRadius(6)
+                    }
+                    Text(viewModel.title)
+                        .padding(.leading, 10)
+                }
+                .padding(.bottom, 3)
             }
-        }
     }
 }
 

@@ -33,9 +33,9 @@ enum RMSettingsOption: CaseIterable {
         case .apiReference:
             return "API Reference"
         case .viewSeries:
-            return "View Video series"
+            return "View Video Series"
         case .viewCode:
-            return "View Code"
+            return "View App Code"
         }
     }
     
