@@ -10,18 +10,22 @@ import UIKit
 
 // The cells will have an image and title
 // Identifiable gives us a unique id that is genereted when we loop over the cells
-struct RMSettingsCellViewModel: Identifiable, Hashable {
+struct RMSettingsCellViewModel: Identifiable{
     
     // creates a unique id for each of the cell view models instances created
     let id = UUID()
     
     // create a reference to the RMSettingsOption enums
-    private let type: RMSettingsOption
+    public let type: RMSettingsOption
+    
+    public let onTapHandler: (RMSettingsOption) -> Void
     
     // MARK: - Initializer
     // the cell view model will be initialized with the following
-    init(type: RMSettingsOption) {
+    // parse the on tap handler
+    init(type: RMSettingsOption, onTapHandler: @escaping (RMSettingsOption) -> Void) {
         self.type = type
+        self.onTapHandler = onTapHandler
     }
     
     // MARK: - Pulic funcs
