@@ -41,10 +41,11 @@ final class RMLocationViewModel {
     
     // function to return the loaction selected
     public func location(at index: Int) -> RMLocation?  {
-        guard index >= location.count else {
+        // verify the number of items in the table
+        guard index < location.count, index >= 0 else {
             return nil
         }
-        return self.location(at: index)
+        return self.location[index]
     }
     
     // fethc the locations

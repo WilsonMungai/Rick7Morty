@@ -8,9 +8,8 @@
 import UIKit
 
 /// Controller to show and search for locations
-final class RMLocationViewController: UIViewController, RMLocationViewModelDelegate
+final class RMLocationViewController: UIViewController, RMLocationViewModelDelegate, RMLocationViewDelegate
 {
-    
     private let primaryView = RMLocationView()
     
     private let viewModel = RMLocationViewModel()
@@ -22,6 +21,7 @@ final class RMLocationViewController: UIViewController, RMLocationViewModelDeleg
         super.viewDidLoad()
         view.addSubview(primaryView)
         view.backgroundColor = .systemBackground
+        primaryView.delegate = self
         addSeacrchButton()
         addConstraint()
         viewModel.delegate = self
@@ -49,5 +49,13 @@ final class RMLocationViewController: UIViewController, RMLocationViewModelDeleg
     // MARK: - LocationViewModelDelegate
     func didFetchInitialLocation() {
         primaryView.config(with: viewModel)
+    }
+    
+    // MARK: - Location view delegate
+    // called when location is selected
+    func rmLocationView(_ locationView: RMLocationView, didSelect location: RMLocation) {
+        let vc = RMLocationDetailViewController(location: location)
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
