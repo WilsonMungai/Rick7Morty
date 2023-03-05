@@ -7,23 +7,59 @@
 
 import UIKit
 
+// interface
+protocol RMLocationViewModelDelegate: AnyObject {
+    func didFetchInitialLocation()
+}
+
 final class RMLocationViewModel {
-    init() {}
+    // hold onto the delegate in a weak capacity
+    weak var delegate: RMLocationViewModelDelegate?
     
     // Hold the locations
-    private var location: [RMLocation] = []
+    private var location: [RMLocation] = [] {
+        // loop over the locations
+        didSet {
+            for locations in location {
+                let cellViewModel = RMLocationTableViewCellViewModel(location: locations)
+                if !cellViewModels.contains(cellViewModel) {
+                    cellViewModels.append(cellViewModel)
+                }
+                
+            }
+        }
+    }
     
     // Location response info
     // contains next url for pagination
-    private var cellViewModels: [String] = []
+    // only this class has the authority to assign to it
+    public private(set) var cellViewModels: [RMLocationTableViewCellViewModel] = []
+    
+    private var apiInfo: RMGetAllLocationsResponse.Info?
+    
+    init() {}
+    
+    // function to return the loaction selected
+    public func location(at index: Int) -> RMLocation?  {
+        guard index >= location.count else {
+            return nil
+        }
+        return self.location(at: index)
+    }
     
     // fethc the locations
     public func fetchLocations() {
-        RMService.shared.execute(.listLocationsRequest, expecting: String.self) { result in
+        RMService.shared.execute(.listLocationsRequest,
+                                 expecting: RMGetAllLocationsResponse.self) { [weak self] result in
             switch result {
-            case .success(let success):
-                break
-            case .failure(let failure):
+            case .success(let model):
+                self?.apiInfo = model.info
+                self?.location = model.results
+                DispatchQueue.main.async {
+                    self?.delegate?.didFetchInitialLocation()
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
                 break
             }
         }
